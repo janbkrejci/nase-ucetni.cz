@@ -20,6 +20,21 @@
     </header>
 
     <main class="flex-grow container mx-auto px-4 py-12 max-w-4xl">
+        <!-- Záložky -->
+        <div class="flex space-x-1 border-b border-slate-200 mb-8">
+            <button id="btn-public" onclick="setTab('public')" class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 border-orange-500 text-orange-600">
+                Veřejné materiály
+            </button>
+            <button id="btn-restricted" onclick="setTab('restricted')" class="px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 border-transparent text-slate-500 hover:text-slate-700">
+                Omezený přístup
+            </button>
+        </div>
+
+        <!-- Filtry (dynamické) -->
+        <div id="category-filters" class="flex flex-wrap gap-2 mb-8">
+            <!-- Vygenerováno JS -->
+        </div>
+
         <div class="grid gap-6 md:grid-cols-2" id="resource-grid">
             <!-- Obsah bude vygenerován JavaScriptem -->
         </div>
@@ -39,6 +54,7 @@
                 description: "Aktiva, pasiva, náklady, výnosy, rozvaha, výkaz zisku a ztráty",
                 type: "presentation",
                 category: "Účetnictví",
+                access: "public",
                 url: "https://1drv.ms/p/c/781cf7d0d31dc2a5/IQDGpUJDPDZPQ6utyY1vwOj0AXNkVgzdvkrMCeiQvT8rSLc?e=X33HMK"
             },
             {
@@ -46,6 +62,7 @@
                 description: "Závazky, pohledávky, zálohy, zápočty",
                 type: "presentation",
                 category: "Účetnictví",
+                access: "public",
                 url: "https://1drv.ms/p/c/781cf7d0d31dc2a5/IQAUkI2XhGN6RK4qG_zI0TXhAZ0JYqMLVYEo29QRcFS54C0?e=pXaHxU"
             },
             {
@@ -53,6 +70,7 @@
                 description: "Jak naložit s nekompletní dodávkou zboží",
                 type: "presentation",
                 category: "Účetnictví",
+                access: "public",
                 url: "https://1drv.ms/p/c/781cf7d0d31dc2a5/IQATfqhYSh7ZTaovI7WaQO2hARgoiQsuG882ZGoLFEKU_uU?e=yJgs2r"
             },
             {
@@ -60,6 +78,7 @@
                 description: "Druhy náhrad při tuzemské a zahraniční pracovní cestě",
                 type: "presentation",
                 category: "Účetnictví",
+                access: "public",
                 url: "https://1drv.ms/p/c/781cf7d0d31dc2a5/IQCCo-xpKFElSbljVxaePOVPAejrdstBoA859hBdWoPNUAk?e=COq5Re"
             },
             {
@@ -67,6 +86,7 @@
                 description: "Časové rozlišení",
                 type: "presentation",
                 category: "Účetnictví",
+                access: "public",
                 url: "https://1drv.ms/p/c/781cf7d0d31dc2a5/IQD4hg7O-997Qa_KMpJ4QSMWAcMpfLcrXKjAmCKT-qJmZVY?e=5GTQgw"
             },
             {
@@ -74,23 +94,27 @@
                 description: "Nezabavitelné minimum, srážky, exekuce",
                 type: "presentation",
                 category: "Mzdy",
+                access: "public",
                 url: "https://1drv.ms/p/c/781cf7d0d31dc2a5/IQBS3jsMgfgZTIT3VnZ3GF4QAXFvDwD7tyvJR4rG6TWsBAs?e=JYQVPe"
             }
         ];
+
+        // --- STAV APLIKACE ---
+        let currentTab = 'public';
+        let currentCategory = 'all';
 
         // --- KONFIGURACE TYPŮ ---
         const typeConfig = {
             presentation: {
                 label: "Prezentace",
-                // Oranžový styl pro PowerPoint
                 wrapperClass: "bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white",
                 titleHoverClass: "group-hover:text-orange-600",
                 icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M5 4h14v12H5z" />
-                       </svg>` // Ikona grafu na plátně
+                       </svg>`
             },
             default: {
-                label: "Odkaz",
+                label: "Dokument",
                 wrapperClass: "bg-slate-100 text-slate-600 group-hover:bg-slate-600 group-hover:text-white",
                 titleHoverClass: "group-hover:text-slate-600",
                 icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -99,18 +123,70 @@
             }
         };
 
-        // --- RENDER LOGIKA ---
+        // --- UI LOGIKA ---
+        function setTab(tab) {
+            currentTab = tab;
+            currentCategory = 'all';
+            
+            // Update UI tabs styling
+            const publicBtn = document.getElementById('btn-public');
+            const restrictedBtn = document.getElementById('btn-restricted');
+            
+            if (tab === 'public') {
+                publicBtn.className = "px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 border-orange-500 text-orange-600";
+                restrictedBtn.className = "px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 border-transparent text-slate-500 hover:text-slate-700";
+            } else {
+                restrictedBtn.className = "px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 border-orange-500 text-orange-600";
+                publicBtn.className = "px-6 py-3 text-sm font-semibold border-b-2 transition-colors duration-200 border-transparent text-slate-500 hover:text-slate-700";
+            }
+
+            renderFilters();
+            renderResources();
+        }
+
+        function setCategory(category) {
+            currentCategory = category;
+            renderFilters();
+            renderResources();
+        }
+
+        function renderFilters() {
+            const container = document.getElementById('category-filters');
+            const tabResources = resources.filter(r => r.access === currentTab);
+            const categories = ['all', ...new Set(tabResources.map(r => r.category))];
+            
+            container.innerHTML = categories.map(cat => {
+                const isActive = currentCategory === cat;
+                const label = cat === 'all' ? 'Vše' : cat;
+                return `
+                    <button 
+                        onclick="setCategory(\'${cat}\')"
+                        class="px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+                            isActive 
+                            ? 'bg-slate-800 text-white shadow-sm' 
+                            : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
+                        }"
+                    >
+                        ${label}
+                    </button>
+                `;
+            }).join('');
+        }
+
         function renderResources() {
             const container = document.getElementById('resource-grid');
-            let htmlContent = '';
+            const filtered = resources.filter(item => 
+                item.access === currentTab && 
+                (currentCategory === 'all' || item.category === currentCategory)
+            );
 
-            resources.forEach(item => {
+            let htmlContent = filtered.map(item => {
                 const config = typeConfig[item.type] || typeConfig.default;
                 const categoryBadge = item.category 
                     ? `<span class="inline-block bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full mt-1 font-medium">${item.category}</span>`
                     : '';
                 
-                htmlContent += `
+                return `
                 <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="group block p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-orange-300 transition-all duration-200">
                     <div class="flex justify-between items-start mb-4">
                         <div class="p-3 rounded-lg transition-colors ${config.wrapperClass}">
@@ -131,9 +207,9 @@
                     </div>
                 </a>
                 `;
-            });
+            }).join('');
 
-            // Přidání placeholderu (pokud chcete zachovat vizuální "brzy bude víc")
+            // Vždy zobrazit "připravujeme" placeholder
             htmlContent += `
             <div class="border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center p-12 text-slate-400 italic text-center min-h-[200px]">
                 Další materiály budou doplněny brzy...
@@ -143,8 +219,10 @@
             container.innerHTML = htmlContent;
         }
 
-        // Spuštění po načtení
-        document.addEventListener('DOMContentLoaded', renderResources);
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFilters();
+            renderResources();
+        });
     </script>
 </body>
 </html>
