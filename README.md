@@ -26,7 +26,7 @@ Obsah webu je definován přímo v souboru `index.html` pomocí JavaScriptového
 
 ## Technické detaily
 
-- **Frontend:** Čisté HTML se stylováním přes [Tailwind CSS](https://tailwindcss.com) (načítáno přes CDN).
+- **Frontend:** Čisté HTML se stylováním přes [Tailwind CSS](https://tailwindcss.com) a písmem Inter, obojí jako npm závislosti bez CDN. `npm run build` vygeneruje web do `dist/`, na GitHub Pages ho při pushi do `main` nasadí workflow `.github/workflows/pages.yml`.
 - **Ikony:** SVG ikony vložené přímo v konfiguraci `typeConfig`.
 - **Hosting:** Projekt je nastaven pro statický hosting (např. GitHub Pages) s vlastní doménou definovanou v souboru `CNAME`.
 
